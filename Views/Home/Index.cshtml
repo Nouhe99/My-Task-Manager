@@ -1,0 +1,109 @@
+﻿@model IEnumerable<ToDo>
+@{
+    ViewData["Title"] = "My Task Manager";
+}
+
+<div class="row">
+    <!-- Filters -->
+    <div class="col-md-3 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-funnel"></i> Filters</h5>
+                <form asp-action="Filter" method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select name="filter" class="form-select"
+                                asp-items="@(new SelectList(ViewBag.Categories, "CategoryId", "Name", ViewBag.Filters.CategoryId))">
+                            <option value="all">All</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Due</label>
+                        <select name="filter" class="form-select"
+                                asp-items="@(new SelectList(ViewBag.DueFilters, "Key", "Value", ViewBag.Filters.Due))">
+                            <option value="all">All</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select name="filter" class="form-select"
+                                asp-items="@(new SelectList(ViewBag.Statuses, "StatusId", "Name", ViewBag.Filters.StatusId))">
+                            <option value="all">All</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-apply-filters w-100">
+                        <i class="bi bi-funnel-fill"></i> Apply Filters
+                    </button>
+                    <a asp-action="Index" asp-route-id="" class="btn btn-clear-filters w-100 mt-2">
+                        <i class="bi bi-x-circle"></i> Clear
+                    </a>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task List -->
+    <div class="col-md-9">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <a asp-action="Add" class="btn btn-success"><i class="bi bi-plus-circle"></i> Add Task</a>
+            <form asp-action="DeleteComplete" method="post" asp-route-id="@ViewBag.Filters.FilterString">
+                <button type="submit" class="btn btn-outline-danger"><i class="bi bi-trash"></i> Delete Completed</button>
+            </form>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="alert alert-info text-center">No tasks found.</div>
+        }
+
+        @foreach (var task in Model)
+        {
+            var isOverdue = task.StatusId == "open" && task.DueDate < DateTime.Today;
+            var isFuture = task.StatusId == "open" && task.DueDate > DateTime.Today;
+            var cardClass = "card mb-4 shadow-sm px-3 py-2";
+            var badge = "";
+
+            if (isOverdue)
+            {
+                cardClass += " border-danger overdue-card";
+                badge = "<span class='badge bg-danger ms-2'><i class='bi bi-exclamation-triangle'></i> Overdue</span>";
+            }
+            else if (isFuture)
+            {
+                cardClass += " border-info";
+                badge = "<span class='badge bg-info text-dark ms-2'><i class='bi bi-hourglass-split'></i> Upcoming</span>";
+            }
+
+            <div class="@cardClass">
+                <div class="card-body p-0">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="card-title mb-1">@task.Description @Html.Raw(badge)</h5>
+                            <p class="text-muted small mb-2">
+                                <i class="bi bi-tag"></i> @task.Category.Name |
+                                <i class="bi bi-calendar-event"></i> @task.DueDate?.ToShortDateString() |
+                                <i class="bi bi-circle-fill" style="color:@(task.StatusId == "open" ? "#0d6efd" : "#28a745")"></i> @task.Status.Name
+                            </p>
+                        </div>
+                        @if (task.StatusId == "open")
+                        {
+                            <form asp-action="MarkComplete" method="post" asp-route-id="@ViewBag.Filters.FilterString">
+                                <input type="hidden" name="Id" value="@task.Id" />                               
+                                <button type="submit" class="btn btn-sm btn-success mt-1 d-flex align-items-center gap-1">
+                                    <i class="bi bi-check-circle"></i>
+                                    <span>Mark Done</span>
+                                </button>
+
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+</div>

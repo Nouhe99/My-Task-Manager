@@ -1,0 +1,61 @@
+﻿@model ToDo
+
+@{
+    ViewData["Title"] = "Add a new task";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8">
+        <div class="card shadow-sm p-4">
+            <h2 class="text-center mb-4 text-dark"><i class="bi bi-plus-circle"></i> Add a new task</h2>
+
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <form asp-action="Add" method="post">
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label fw-semibold">Description</label>
+                    <input asp-for="Description" class="form-control" placeholder="What do you need to do?" />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="CategoryId" class="form-label fw-semibold">Category</label>
+                    <select asp-for="CategoryId" class="form-select"
+                            asp-items="@(new SelectList(ViewBag.Categories, "CategoryId", "Name"))">
+                        <option value="">-- Select Category --</option>
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="DueDate" class="form-label fw-semibold">Due Date</label>
+                    <input asp-for="DueDate"
+                           class="form-control"
+                           type="datetime-local"
+                           value="@(Model?.DueDate?.ToString("yyyy-MM-ddTHH:mm") ?? "")"
+                           onkeydown="return false;"
+                           onfocus="this.showPicker()" />
+
+                    <span asp-validation-for="DueDate" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="StatusId" class="form-label fw-semibold">Status</label>
+                    <select asp-for="StatusId" class="form-select"
+                            asp-items="@(new SelectList(ViewBag.Statuses, "StatusId", "Name", "open"))">
+                    </select>
+                    <span asp-validation-for="StatusId" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-apply-filters">
+                        <i class="bi bi-check2-circle"></i> Add Task
+                    </button>
+                    <a asp-action="Index" class="btn btn-clear-filters">
+                        <i class="bi bi-arrow-left"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
