@@ -1,0 +1,36 @@
+name: Deploy ASP.NET app to Azure
+
+on:
+  push:
+    branches:
+      - main  # ou master selon ton repo
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Publish
+      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: 'MyTaskManager' # ⚠️ doit correspondre exactement au nom de ton App Service
+        slot-name: 'production'
+        publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
+        package: ${{env.DOTNET_ROOT}}/myapp
