@@ -24,13 +24,14 @@ jobs:
     - name: Build
       run: dotnet build ./ToDoApp.csproj --configuration Release --no-restore
 
-    - name: Publish
-      run: dotnet publish ./ToDoApp.csproj -c Release -o ./publish
+    - name: Publish   
+      run: dotnet publish ./ToDoApp.csproj -c Release -r win-x86 --self-contained true -o ./publish
+
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v3
       with:
-        app-name: 'MyTaskManager' # ⚠️ Ce nom doit correspondre exactement à ton App Service Azure
+        app-name: 'MyTaskManager'
         slot-name: 'production'
         publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
         package: ./publish
