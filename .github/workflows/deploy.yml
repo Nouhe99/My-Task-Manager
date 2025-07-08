@@ -28,7 +28,7 @@ jobs:
       run: dotnet publish ./ToDoApp.csproj -c Release -r win-x86 --self-contained true -o ./publish
 
     - name: Copy web.config
-      run: cp ./ToDoApp/web.config ./publish/web.config
+      run: cp ./web.config ./publish/web.config
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v3
