@@ -19,19 +19,18 @@ jobs:
         dotnet-version: '9.0.x'
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore ./ToDoApp/ToDoApp.csproj
 
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build ./ToDoApp/ToDoApp.csproj --configuration Release --no-restore
 
     - name: Publish
-    run: dotnet publish ./ToDoApp/ToDoApp.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
-
+      run: dotnet publish ./ToDoApp/ToDoApp.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v3
       with:
-        app-name: 'MyTaskManager' # ⚠️ doit correspondre exactement au nom de ton App Service
+        app-name: 'MyTaskManager' # ⚠️ Ton nom exact d'App Service Azure
         slot-name: 'production'
         publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
         package: ${{env.DOTNET_ROOT}}/myapp
