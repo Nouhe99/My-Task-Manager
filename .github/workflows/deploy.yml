@@ -16,7 +16,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '9.0.x'
+        dotnet-version: '8.0.x'
 
     - name: Restore dependencies
       run: dotnet restore ./ToDoApp.csproj
@@ -24,9 +24,11 @@ jobs:
     - name: Build
       run: dotnet build ./ToDoApp.csproj --configuration Release --no-restore
 
-    - name: Publish   
+    - name: Publish
       run: dotnet publish ./ToDoApp.csproj -c Release -r win-x86 --self-contained true -o ./publish
 
+    - name: Copy web.config
+      run: cp ./ToDoApp/web.config ./publish/web.config
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v3
