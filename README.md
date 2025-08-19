@@ -2,7 +2,7 @@
 
 A modern task manager built with ASP.NET Core MVC.
 
-## Features
+## Features 
 - Add, filter, and complete tasks
 - Filter by category, status, or due date
 - Elegant, responsive UI with Bootstrap
